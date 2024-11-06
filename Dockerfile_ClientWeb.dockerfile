@@ -16,11 +16,14 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && git \
-    && unzip
+    && unzip \
+    && -g @angular/cli@17
 
 # Créer un répertoire pour le service SSH
 RUN mkdir /var/run/sshd \
-    && curl -L -o /path/in/container/ https://github.com/Ben290402/BFF/tree/677dc472be8795cc7d2bef58f71b7f8cf77f88a2/AngularSimulatorClient
+    && curl -L -o /path/in/container/ https://github.com/Ben290402/BFF-POC/blob/a6557d7710dbf7b925b6d3824957cfad6a689a21/AngularSimulatorClient.7z \
+    && unzip /path/in/container/AngularSimulatorClient.7z \
+    && ng serve AngularSimulatorClient --port 80 -o
 
 # Expose the default Netdata port
 EXPOSE 19999 80 22
