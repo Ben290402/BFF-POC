@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     p7zip-full \
     git \
+    net-tools \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 

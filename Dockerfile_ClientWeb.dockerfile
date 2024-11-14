@@ -13,17 +13,14 @@ RUN apt-get update && apt-get install -y \
     p7zip-full \
     gnupg \
     net-tools \
+    lynx \
     && curl -sL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g @angular/cli \
-    && curl https://get.netdata.cloud/kickstart.sh > /tmp/netdata-kickstart.sh \
-    && sh /tmp/netdata-kickstart.sh \
-    && sudo service netdata start \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && npm install -g @angular/cli
+    
 
 # Create the directory to store the downloaded file
-RUN mkdir -p /app
+RUN mkdir -p /app 
 
 # Download the .7z file containing the Angular app
 RUN curl -L -o /app/AngularSimulatorClient.7z \
@@ -36,8 +33,8 @@ RUN ls -l /app && 7z x /app/AngularSimulatorClient.7z -o/app && ls /app/AngularS
 RUN mkdir /var/run/sshd
 
 # Expose the necessary ports for Netdata, the Angular app, and SSH
-EXPOSE 19999 80 22
+EXPOSE 19999 81 22
 
 # Start Netdata, SSH, and the Angular app with ng serve
-CMD ["/bin/bash", "-c", "service netdata start && /usr/sbin/sshd -D & cd /app/AngularSimulatorClient && ng serve --host 0.0.0.0 --port 80"]
+CMD ["/bin/bash", "-c", "/usr/sbin/sshd -D"]
 

@@ -1,29 +1,30 @@
-# Use Debian 11 (Bullseye) as the base image
-FROM debian:11
+# Utiliser une image de base Node.js
+FROM node:20
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
+# Définir le répertoire de travail
+WORKDIR /app
 
-# Install necessary packages and Netdata
 RUN apt-get update && apt-get install -y \
-    openssh-server \
-    sudo \
     curl \
-    systemd \
-    && curl https://get.netdata.cloud/kickstart.sh > /tmp/netdata-kickstart.sh \
-    && sh /tmp/netdata-kickstart.sh \
-    && sudo service netdata start \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && git \
-    && unzip
+    p7zip-full
 
-# Créer un répertoire pour le service SSH
-RUN mkdir /var/run/sshd \
-    && curl -L -o /path/in/container/ https://github.com/Ben290402/BFF-POC/blob/a6557d7710dbf7b925b6d3824957cfad6a689a21/BFFSimulatorAPI.7z
+# Copier les fichiers package.json et package-lock.json dans le conteneur
+# COPY package.json package-lock.json ./
 
-# Expose the default Netdata port
-EXPOSE 19999 80 22
+#Téléchargement du fichier .zip
+RUN curl -L -o BFFSimulatorAPI_test.7z \
+https://github.com/Ben290402/BFF-POC/raw/2c74bc27b1e950b0ed66020022c172e3eba06af2/BFFSimulatorAPI_test.7z
 
-# Start Netdata
-CMD ["netdata", "/usr/sbin/sshd", "-D"]
+
+RUN 7z x BFFSimulatorAPI_test.7z -o/app
+# Installer les dépendances
+RUN cd /app/BFFSimulatorAPI && npm install
+
+# Copier le fichier de simulation d'API
+# COPY backForFrontSimulator.js .
+
+# Exposer le port sur lequel l'API écoute (3002 dans backForFrontSimulator.js)
+EXPOSE 3002
+
+# Démarrer l'API
+CMD ["node", "/app/BFFSimulatorAPI/backForFrontSimulator.js"]
